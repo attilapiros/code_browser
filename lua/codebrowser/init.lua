@@ -27,44 +27,47 @@ local function find_link(current_line, url, target_index)
   local index = 0
   local i = 1
   local j = 0
-  local regexp = url .. "[^#]*#L%d+" 
+  local regexp = url .. "[^#]*#L%d+"
   while index < target_index
   do
     i, j = string.find(current_line, regexp, j + 1)
     if j == nil then break end
     index = index + 1
-  end 
+  end
 
-  if index == target_index then 
+  if index == target_index then
     return string.sub(current_line, i, j)
-  else 
+  else
     print("no link found for the requested index (" .. target_index .. "), last index is: " .. index)
     return nil
   end
 end
 
--- open 
-local function open_code_at(target_index) 
+-- open
+local function open_code_at(target_index)
   -- the number https://github.com/a.java#L32 is 23 or 89
   local current_line = fn.getline('.')
-  print("line: " .. current_line) 
+  -- print("line: " .. current_line)
   if vim.g.code_browser_settings then
     local link = find_link(current_line, vim.g.code_browser_settings['url'], tonumber(target_index))
-    print("link: " .. link) 
+    -- print("link: " .. link)
     if link then
       local filename, linenum = file_and_linenum(link, vim.g.code_browser_settings['url'], vim.g.code_browser_settings['dir'])
       open_or_load_above(filename, linenum)
     end
-  else 
+  else
     print("Code browser not initialized, please call: \"let g:code_browser_settings = { 'url': '<url>', 'dir': '<dir>' }\"!")
   end
 end
 
 local function save_file_position_as_link_to_clipboard()
-  local line_num = fn.line(".")
-  local file_name = fn.resolve(fn.expand("%:t"))
-  local dir_name = string.gsub(fn.resolve(fn.expand("%:p:h")), vim.g.code_browser_settings['dir'], "")
-  fn.setreg("", vim.g.code_browser_settings['url'] .. '/' .. dir_name .. '/' .. file_name .. '#L' .. line_num)
+  if vim.g.code_browser_settings then
+    local line_num = fn.line(".")
+    local file_path = string.gsub(fn.resolve(fn.expand("%:p")), vim.g.code_browser_settings['dir'], "")
+    fn.setreg("", vim.g.code_browser_settings['url'] .. file_path .. '#L' .. line_num)
+  else
+    print("Code browser not initialized, please call: \"let g:code_browser_settings = { 'url': '<url>', 'dir': '<dir>' }\"!")
+  end
 end
 
 -- Returning a Lua table at the end allows fine control of the symbols that
