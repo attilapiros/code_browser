@@ -25,8 +25,8 @@ let g:code_browser_settings = { 'url': 'https://github.com/attilapiros/code_brow
 You can paste it and wrap around as wiki / markdown link, i.e: [example link](https://github.com/attilapiros/code_browser/blob/main/lua/codebrowser/init.lua#L63)
 
 4) when you read the document and you are at line where a link is given to a line you can visit it by `:OpenCodeAt <index-of-the-link-within-the-current-line>`
-regarding this the following mapping can be useful:
+regarding this the following buffer mapping can be useful:
 ```
-nnoremap <C-]> :<C-U>exe 'OpenCodeAt' . v:count1<CR>
+autocmd FileType vimwiki,pandoc,markdown nnoremap <buffer> <C-]> :<C-U>exe 'OpenCodeAt' . v:count1<CR>
 ```
 Which can be called even with a number like `2<C-]>`.
